@@ -15,18 +15,19 @@ class MadgwickAHRS:
         Accel units: m/s^2 or g
         """
         # Step 1: Compute rate of change of quaternion from gyroscope data
-
-                
+        q_gyro_dot = 0.5 * quat_mul(self.q, [0.0, gx, gy, gz])
+        
         # Step 2: Calculate gradient descent direction from accelerometer data
-
-                
+        step = compute_gradient_descent_step(self.q, ax, ay, az)
+        
         # Step 3: Apply filter gain and fuse rate measurements
-
-                
+        q_dot = q_gyro_dot - self.beta * step
+        
         # Step 4: Integrate to yield quaternion
-
-                
+        self.q += q_dot * self.dt
+        
         # Step 5: Normalize quaternion
+        self.q /= np.linalg.norm(self.q)
 
         
         return self.q
